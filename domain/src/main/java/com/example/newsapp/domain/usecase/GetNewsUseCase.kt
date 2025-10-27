@@ -1,0 +1,14 @@
+package com.example.newsapp.domain.usecase
+
+import com.example.newsapp.domain.common.NewResult
+import com.example.newsapp.domain.model.Article
+import com.example.newsapp.domain.repository.NewsRepository
+import javax.inject.Inject
+
+class GetNewsUseCase @Inject constructor(
+    private val newsRepository: NewsRepository
+) {
+    suspend operator fun invoke(): NewResult<List<Article>> {
+        return newsRepository.getTopHeadlines()
+    }
+}
