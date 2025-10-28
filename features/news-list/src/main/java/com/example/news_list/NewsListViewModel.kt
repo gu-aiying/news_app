@@ -20,21 +20,39 @@ class NewsListViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(NewsListUiState())
     val uiState: StateFlow<NewsListUiState> = _uiState.asStateFlow()
 
+    private var currentPage = 1
+    private var canLoadMore = true
+
     init {
         loadNews()
     }
 
     fun loadNews() {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+        if (_uiState.value.isLoading || !canLoadMore) return
 
-            when (val result = getNewsUseCase()) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                error = null
+            )
+
+            when (val result = getNewsUseCase(currentPage)) {
                 is NewResult.Success -> {
+
+                    val newArticles = if (currentPage == 1) {
+                        result.data
+                    } else {
+                        _uiState.value.articles + result.data
+                    }
+
+                    canLoadMore = result.data.isNotEmpty()
+
                     _uiState.value = _uiState.value.copy(
-                        articles = result.data,
-                        isLoading = false,
-                        error = null
+                        articles = newArticles,
+                        isLoading = false
                     )
+
+                    currentPage++
                 }
 
                 is NewResult.Error -> {
@@ -51,6 +69,13 @@ class NewsListViewModel @Inject constructor(
     }
 
     fun refreshNews() {
+        currentPage = 1
+        canLoadMore = true
+        _uiState.value = _uiState.value.copy(articles = emptyList())
+        loadNews()
+    }
+
+    fun loadMoreNews() {
         loadNews()
     }
 
@@ -63,5 +88,6 @@ class NewsListViewModel @Inject constructor(
 data class NewsListUiState(
     val articles: List<Article> = emptyList(),
     val isLoading: Boolean = false,
+    val isLoadingMore: Boolean = false,
     val error: String? = null
 )

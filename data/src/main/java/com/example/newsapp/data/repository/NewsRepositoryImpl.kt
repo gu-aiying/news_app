@@ -10,9 +10,9 @@ class NewsRepositoryImpl @Inject constructor(
     private val newsApi: NewsApi
 ) : NewsRepository {
 
-    override suspend fun getTopHeadlines(): NewResult<List<Article>> {
+    override suspend fun getTopHeadlines(page: Int): NewResult<List<Article>> {
         return try {
-            val response = newsApi.getTopHeadlines()
+            val response = newsApi.getTopHeadlines(page = page)
             if (response.status == "ok") {
                 NewResult.Success(response.articles.map { it.toArticle() })
             } else {
@@ -23,9 +23,9 @@ class NewsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchNews(query: String): NewResult<List<Article>> {
+    override suspend fun searchNews(query: String, page: Int): NewResult<List<Article>> {
         return try {
-            val response = newsApi.searchNews(query)
+            val response = newsApi.searchNews(query, page = page)
             if (response.status == "ok") {
                 NewResult.Success(response.articles.map { it.toArticle() })
             } else {

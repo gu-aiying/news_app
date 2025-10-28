@@ -8,7 +8,7 @@ import javax.inject.Inject
 class SearchNewsUseCase @Inject constructor(
     private val newsRepository: NewsRepository
 ) {
-    suspend operator fun invoke(query: String): NewResult<List<Article>> {
-        return newsRepository.searchNews(query)
+    suspend operator fun invoke(query: String, page: Int = 1): NewResult<List<Article>> {
+        return newsRepository.searchNews(query, page)
     }
 }

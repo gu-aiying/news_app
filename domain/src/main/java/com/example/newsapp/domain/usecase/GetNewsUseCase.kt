@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetNewsUseCase @Inject constructor(
     private val newsRepository: NewsRepository
 ) {
-    suspend operator fun invoke(): NewResult<List<Article>> {
-        return newsRepository.getTopHeadlines()
+    suspend operator fun invoke(page: Int = 1): NewResult<List<Article>> {
+        return newsRepository.getTopHeadlines(page)
     }
 }
