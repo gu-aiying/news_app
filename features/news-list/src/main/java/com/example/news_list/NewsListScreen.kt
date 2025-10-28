@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,15 +25,15 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.news_list.component.NewsItem
 import com.example.newsapp.domain.model.Article
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewsListScreen(
-    viewModel: NewsListViewModel = viewModel(),
+    viewModel: NewsListViewModel = hiltViewModel(),
     onNewsClick: (Article) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -74,11 +75,29 @@ fun NewsListScreen(
         }
     }
 
+    NewsListContent(
+        uiState = uiState,
+        onNewsClick = onNewsClick,
+        onRefresh = { viewModel.refreshNews() },
+        onClearError = { viewModel.clearError() },
+        lazyListState = lazyListState,
+        snackbarHostState = snackbarHostState
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NewsListContent(
+    uiState: NewsListUiState,
+    onNewsClick: (Article) -> Unit,
+    onRefresh: () -> Unit,
+    onClearError: () -> Unit,
+    lazyListState: LazyListState,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("新闻头条") }
-            )
+            TopAppBar(title = { Text("新闻头条") })
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
@@ -88,9 +107,7 @@ fun NewsListScreen(
                 .padding(innerPadding)
         ) {
             if (uiState.isLoading && uiState.articles.isEmpty()) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
                 LazyColumn(
                     state = lazyListState,
@@ -117,7 +134,6 @@ fun NewsListScreen(
                         }
                     }
                 }
-
             }
         }
     }
