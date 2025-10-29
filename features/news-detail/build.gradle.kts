@@ -49,10 +49,11 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Compose
-    implementation(platform(libs.androidx.compose.bom.v20231001))
-    implementation(libs.ui)
-    implementation(libs.ui.graphics)
-    implementation(libs.ui.tooling.preview)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
     implementation(libs.material3)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 

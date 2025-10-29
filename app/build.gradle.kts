@@ -72,11 +72,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Compose
-    implementation(platform(libs.androidx.compose.bom.v20231001))
-    implementation(libs.ui)
-    implementation(libs.ui.graphics)
-    implementation(libs.ui.tooling.preview)
-    implementation(libs.material3)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Navigation
